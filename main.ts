@@ -28,5 +28,13 @@ const entry = readFileSync(entryPath, 'utf8');
 if (entry.length < 1 || entry.length > 200) {
   throw new Error(`entry is ${entry.length} characters, outside the 1-200 gate`);
 }
+// The brief asks for exactly one line, one sentence, no trailing
+// newline: refuse anything else rather than shipping a malformed entry.
+if (entry.endsWith('\n') || entry.split('\n').length !== 1) {
+  throw new Error('entry must be exactly one line with no trailing newline');
+}
+if ((entry.match(/\./g) ?? []).length !== 1) {
+  throw new Error('entry must be exactly one sentence (one period)');
+}
 mkdirSync(outDir, { recursive: true });
 writeFileSync(join(outDir, 'entry.txt'), entry);
